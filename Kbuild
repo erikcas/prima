@@ -1,10 +1,6 @@
 # We can build either as part of a standalone Kernel build or part
 # of an Android build.  Determine which mechanism is being used
-ifeq ($(MODNAME),)
 	KERNEL_BUILD := 1
-else
-	KERNEL_BUILD := 0
-endif
 
 ifeq ($(KERNEL_BUILD),1)
 	# These are provided in Android-based builds
@@ -682,3 +678,7 @@ KBUILD_CPPFLAGS += $(CDEFINES)
 obj-$(CONFIG_PRIMA_WLAN) += $(MODNAME).o
 obj-$(CONFIG_PRONTO_WLAN) += $(MODNAME).o
 $(MODNAME)-y := $(OBJS)
+
+clean::
+	rm -f *.o *.ko *.mod.c *.mod.o *~ .*.cmd Module.symvers
+	rm -rf .tmp_versions

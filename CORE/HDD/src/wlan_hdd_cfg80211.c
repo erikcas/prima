@@ -4089,6 +4089,7 @@ static int wlan_hdd_cfg80211_set_spoofed_mac_oui(struct wiphy *wiphy,
     return 0;
 }
 
+#ifdef FEATURE_WLAN_TDLS
 static int wlan_hdd_cfg80211_exttdls_get_status(struct wiphy *wiphy,
                                                 struct wireless_dev *wdev,
                                                 void *data,
@@ -4127,14 +4128,12 @@ static int wlan_hdd_cfg80211_exttdls_get_status(struct wiphy *wiphy,
         hddLog(VOS_TRACE_LEVEL_ERROR, FL("attr mac addr failed"));
         return -EINVAL;
     }
-
     memcpy(peer, nla_data(
            tb[QCA_WLAN_VENDOR_ATTR_TDLS_GET_STATUS_MAC_ADDR]),
            sizeof(peer));
     hddLog(VOS_TRACE_LEVEL_INFO, FL(MAC_ADDRESS_STR),MAC_ADDR_ARRAY(peer));
 
     ret = wlan_hdd_tdls_get_status(pAdapter, peer, &state, &reason);
-
     if (0 != ret) {
         hddLog(VOS_TRACE_LEVEL_ERROR,
                FL("get status Failed"));
@@ -4171,7 +4170,6 @@ static int wlan_hdd_cfg80211_exttdls_get_status(struct wiphy *wiphy,
         hddLog(VOS_TRACE_LEVEL_ERROR, FL("nla put fail"));
         goto nla_put_failure;
     }
-
     return cfg80211_vendor_cmd_reply(skb);
 
 nla_put_failure:
@@ -4374,6 +4372,7 @@ static int wlan_hdd_cfg80211_exttdls_disable(struct wiphy *wiphy,
 
     return (wlan_hdd_tdls_extctrl_deconfig_peer(pAdapter, peer));
 }
+#endif
 
 static int
 wlan_hdd_cfg80211_get_supported_features(struct wiphy *wiphy,
@@ -4788,6 +4787,7 @@ const struct wiphy_vendor_command hdd_wiphy_vendor_commands[] =
     },
 #endif /* WLAN_FEATURE_EXTSCAN */
 /*EXT TDLS*/
+#ifdef FEATURE_WLAN_TDLS
     {
         .info.vendor_id = QCA_NL80211_VENDOR_ID,
         .info.subcmd = QCA_NL80211_VENDOR_SUBCMD_TDLS_ENABLE,
@@ -4811,6 +4811,7 @@ const struct wiphy_vendor_command hdd_wiphy_vendor_commands[] =
                  WIPHY_VENDOR_CMD_NEED_NETDEV,
         .doit = wlan_hdd_cfg80211_exttdls_get_status
     },
+#endif
     {
         .info.vendor_id = QCA_NL80211_VENDOR_ID,
         .info.subcmd = QCA_NL80211_VENDOR_SUBCMD_GET_SUPPORTED_FEATURES,
